@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construcción histórica de las infancias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #FBF7EF;
+    --paper-raised: #F3EDDF;
+    --ink: #2C2820;
+    --ink-soft: #6B6250;
+    --line: #E1D6BC;
+    --gold: #9C7A34;
+    --gold-soft: #C7A45F;
+
+    --antigua: #A6552D;
+    --media: #2B3A55;
+    --moderna: #3F5C3A;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--paper);
+    background-image: radial-gradient(circle at 15% 0%, #F7F1E2 0%, var(--paper) 45%);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 90px;
+  }
+
+  h1, h2, h3, .display{
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  a{ color: var(--gold); }
+
+  :focus-visible{ outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 30px; }
+
+  [contenteditable="true"]{
+    outline: 1px dashed var(--gold-soft);
+    outline-offset: 4px;
+    border-radius: 2px;
+    cursor: text;
+  }
+  [contenteditable="true"]:focus{ outline: 1.5px solid var(--gold); background: #FFFDF7; }
+
+  /* ---------- Hero ---------- */
+
+  header.hero{ position: relative; padding: 88px 0 64px; border-bottom: 1px solid var(--line); overflow: hidden; }
+  .hero-motif{ position: absolute; top: 30px; right: 0; width: 260px; height: 260px; opacity: 0.9; }
+
+  .kicker{ font-size: 12.5px; letter-spacing: 0.02em; color: var(--gold); margin-bottom: 20px; }
+  .kicker span + span{ margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); color: var(--ink-soft); }
+
+  h1.title{ font-size: clamp(38px, 5.6vw, 60px); line-height: 1.06; max-width: 15ch; font-style: italic; }
+
+  .presentation{ margin-top: 28px; max-width: 62ch; font-size: 18px; color: var(--ink-soft); }
+  .presentation p{ margin: 0 0 14px; }
+  .presentation p:last-child{ margin-bottom: 0; }
+
+  .flourish{ display:flex; align-items:center; gap: 14px; margin: 50px 0 0; color: var(--gold-soft); }
+  .flourish svg{ flex-shrink:0; }
+  .flourish::after{ content:''; flex:1; height:1px; background: var(--line); }
+
+  /* ---------- Team ---------- */
+
+  section.team{ padding: 56px 0; border-bottom: 1px solid var(--line); }
+
+  .section-head{ display:flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+  .section-head h2{ font-size: 30px; font-style: italic; }
+
+  .edit-hint{ font-size: 13px; color: var(--gold); display: none; }
+  body.edit-mode .edit-hint{ display: block; }
+
+  .team-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+
+  .member{
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    padding: 24px 18px;
+    text-align: center;
+  }
+
+  .avatar-wrap{ position:relative; width: 68px; height:68px; margin: 0 auto 14px; }
+  .avatar{
+    width: 68px; height: 68px; border-radius: 50%;
+    background: var(--ink) center/cover no-repeat;
+    color: var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Cormorant Garamond', serif; font-size: 21px;
+  }
+  .photo-btn{
+    display:none;
+    position:absolute; bottom:-2px; right:-2px;
+    width: 24px; height:24px; border-radius:50%;
+    background: var(--gold); color:#fff; border: 2px solid var(--paper-raised);
+    font-size: 11px; align-items:center; justify-content:center; cursor:pointer;
+  }
+  body.edit-mode .photo-btn{ display:flex; }
+
+  .role-pill{
+    appearance: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 9px 16px;
+    font-family: 'Karla', sans-serif;
+    font-size: 12.5px;
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .role-pill:hover{ border-color: var(--gold-soft); background: var(--paper-raised); }
+  .role-pill .role-label{ white-space: normal; line-height: 1.3; text-align: center; }
+  .role-pill .role-arrow{ color: var(--gold); flex-shrink:0; }
+
+  /* ---------- Member modal ---------- */
+
+  .member-modal-overlay{
+    display:none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(44,40,32,0.5);
+    backdrop-filter: blur(2px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .member-modal-overlay.open{ display:flex; animation: fade .2s ease; }
+
+  .member-modal{
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 36px 32px 28px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 86vh;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-close{
+    position:absolute; top:12px; right:12px;
+    width: 28px; height:28px; border-radius:50%;
+    border:none; background: var(--paper-raised); color: var(--ink-soft);
+    font-size: 16px; cursor:pointer; line-height:1;
+    flex-shrink: 0;
+  }
+  .modal-close:hover{ color: var(--ink); }
+
+  .modal-avatar{
+    width: 96px; height:96px; border-radius:50%;
+    background: var(--ink) center/cover no-repeat;
+    margin: 0 auto 18px;
+    flex-shrink: 0;
+  }
+
+  .modal-name{ font-family:'Cormorant Garamond', serif; font-style: italic; font-size: 23px; margin-bottom: 4px; flex-shrink: 0; }
+  .modal-role{ font-size: 13px; color: var(--gold); margin-bottom: 18px; letter-spacing: 0.01em; flex-shrink: 0; }
+
+  .modal-bio-wrap{
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 160px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .modal-bio-scroll{
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+  }
+  .modal-bio-scroll::before{
+    content:'';
+    position:absolute; top:0; left:0; right:6px; height:14px;
+    background: linear-gradient(var(--paper), transparent);
+    pointer-events:none; z-index:1;
+  }
+  .modal-bio-scroll::after{
+    content:'';
+    position:absolute; bottom:0; left:0; right:6px; height:14px;
+    background: linear-gradient(transparent, var(--paper));
+    pointer-events:none; z-index:1;
+  }
+
+  .modal-bio{
+    font-size: 15px; color: var(--ink-soft); text-align: left;
+    height: 100%;
+    overflow-y: auto;
+    padding: 2px 6px 2px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-soft) transparent;
+  }
+  .modal-bio::-webkit-scrollbar{ width: 5px; }
+  .modal-bio::-webkit-scrollbar-thumb{ background: var(--gold-soft); border-radius: 3px; }
+  .modal-bio::-webkit-scrollbar-track{ background: transparent; }
+
+  .modal-scroll-btns{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .scroll-btn{
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    color: var(--gold);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+  }
+  .scroll-btn:hover:not(:disabled){ background: var(--paper); border-color: var(--gold-soft); }
+  .scroll-btn:disabled{ opacity: 0.28; cursor: default; }
+
+  /* ---------- Tabs ---------- */
+
+  nav.tabs{ position: sticky; top: 0; background: var(--paper); border-bottom: 1px solid var(--line); z-index: 10; }
+  .tabs-inner{ display:flex; gap: 4px; overflow-x: auto; }
+  .tab-btn{
+    appearance: none; background:none; border:none; border-bottom: 2px solid transparent;
+    font-family: 'Karla', sans-serif; font-size: 14px; color: var(--ink-soft);
+    padding: 18px 6px; margin-right: 28px; cursor: pointer; white-space: nowrap;
+  }
+  .tab-btn:hover{ color: var(--ink); }
+  .tab-btn.active{ color: var(--ink); border-bottom-color: var(--gold); }
+  .tab-btn .num{ font-family:'Cormorant Garamond', serif; font-style: italic; color: var(--gold-soft); margin-right: 8px; }
+
+  main{ padding: 54px 0 20px; }
+  .panel{ display:none; }
+  .panel.active{ display:block; animation: fade .35s ease; }
+  @keyframes fade{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none;} }
+
+  .placeholder-panel{ padding: 60px 0; color: var(--ink-soft); max-width: 48ch; }
+  .placeholder-panel h3{ font-size: 24px; margin-bottom: 10px; color: var(--ink); font-style: italic; }
+
+  .intro{ max-width: 66ch; font-size: 17px; color: var(--ink-soft); margin-bottom: 46px; }
+  h2.panel-title{ font-size: 32px; margin-bottom: 8px; font-style: italic; }
+  .panel-sub{ color: var(--gold); font-size: 14px; margin-bottom: 36px; letter-spacing: 0.01em; }
+
+  /* Timeline */
+
+  .timeline-nav{ display:flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 36px; }
+  .era-btn{ flex:1; appearance:none; background:none; border:none; border-right: 1px solid var(--line); text-align:left; padding: 20px 18px; cursor:pointer; font-family: inherit; }
+  .era-btn:last-child{ border-right:none; }
+  .era-btn .era-period{ font-size: 12px; color: var(--ink-soft); margin-bottom: 6px; }
+  .era-btn .era-name{ font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: var(--ink); }
+  .era-btn .era-bar{ height: 2px; width: 0; margin-top: 14px; transition: width .25s ease; }
+  .era-btn.active .era-bar{ width: 100%; }
+  .era-btn[data-era="antigua"] .era-bar{ background: var(--antigua); }
+  .era-btn[data-era="media"] .era-bar{ background: var(--media); }
+  .era-btn[data-era="moderna"] .era-bar{ background: var(--moderna); }
+
+  .era-panel{ display:none; }
+  .era-panel.active{ display:block; animation: fade .3s ease; }
+  .era-head{ display:flex; align-items:center; gap: 14px; margin-bottom: 24px; }
+  .era-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .era-panel[data-era="antigua"] .era-dot{ background: var(--antigua); }
+  .era-panel[data-era="media"] .era-dot{ background: var(--media); }
+  .era-panel[data-era="moderna"] .era-dot{ background: var(--moderna); }
+  .era-head h3{ font-size: 25px; font-style: italic; }
+  .era-head .era-range{ font-size: 14px; color: var(--ink-soft); }
+
+  .era-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 30px 42px; }
+  @media (max-width: 720px){
+    .era-grid{ grid-template-columns: 1fr; }
+    .timeline-nav{ flex-direction: column; }
+    .era-btn{ border-right:none; border-bottom: 1px solid var(--line); }
+    .era-btn:last-child{ border-bottom:none; }
+  }
+
+  .era-field h4{ font-size: 12px; color: var(--gold); margin: 0 0 8px; font-weight: 600; letter-spacing: 0.01em; }
+  .era-field p, .era-field ul{ margin:0; font-size: 15px; color: var(--ink); }
+  .era-field ul{ padding-left: 18px; }
+  .era-field li{ margin-bottom: 6px; }
+  .era-field.full{ grid-column: 1 / -1; }
+  .era-field.full p{ background: var(--paper-raised); border-left: 3px solid var(--gold); padding: 14px 18px; font-size: 15px; color: var(--ink-soft); }
+
+
+  /* ---------- Reto 3: matriz de análisis ---------- */
+  .r3-heading{ font-size: 24px; font-style: italic; margin: 44px 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .r3-student{ font-size: 15px; font-family:'Karla', sans-serif; font-weight:600; color: var(--gold); letter-spacing: 0.01em; margin: 30px 0 14px; }
+  .r3-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 20px; }
+  .r3-card{ background: var(--paper-raised); border: 1px solid var(--line); border-top: 3px solid var(--gold); padding: 18px 20px 6px; }
+  .r3-author{ font-family:'Cormorant Garamond', serif; font-size: 20px; font-style: italic; margin: 0 0 12px; color: var(--ink); }
+  .r3-card dt{ font-size: 12px; font-weight: 600; color: var(--gold); margin: 0 0 3px; letter-spacing: 0.01em; }
+  .r3-card dd{ margin: 0 0 14px; font-size: 14.5px; color: var(--ink); }
+  .r3-concl{ margin: 22px 0; }
+  .r3-concl h4{ font-size: 13px; color: var(--gold); margin: 0 0 6px; font-weight: 600; letter-spacing: 0.01em; }
+  .r3-concl p{ margin: 0; font-size: 15.5px; color: var(--ink); max-width: 76ch; }
+
+  /* Closing + references */
+
+  .closing{ margin-top: 58px; padding-top: 42px; border-top: 1px solid var(--line); max-width: 68ch; }
+  .closing h3{ font-size: 21px; margin-bottom: 14px; font-style: italic; }
+  .closing p{ color: var(--ink-soft); font-size: 16px; }
+
+  .references{ margin-top: 46px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .references h3{ font-size: 19px; margin-bottom: 16px; font-style: italic; }
+  .references ol{ padding-left: 20px; color: var(--ink-soft); font-size: 14.5px; }
+  .references li{ margin-bottom: 12px; }
+
+  footer{ border-top: 1px solid var(--line); padding: 28px 0; font-size: 13px; color: var(--ink-soft); }
+
+  /* ---------- Edit toolbar ---------- */
+
+  .edit-toolbar{
+    position: fixed; bottom: 22px; right: 22px; z-index: 100;
+    display:flex; gap: 8px; align-items:center;
+    background: var(--ink); padding: 8px; border-radius: 30px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  }
+  .edit-toolbar button{
+    appearance:none; border:none; cursor:pointer; font-family:'Karla',sans-serif;
+    font-size: 13px; padding: 10px 16px; border-radius: 22px; white-space:nowrap;
+  }
+  .btn-primary{ background: var(--gold); color:#fff; }
+  .btn-ghost{ background: transparent; color: #EDE6D4; display:none; }
+  body.edit-mode .btn-ghost{ display:inline-block; }
+
+  .toast{
+    position: fixed; bottom: 78px; right: 22px; z-index: 101;
+    background: var(--ink); color:#fff; padding: 10px 18px; border-radius: 6px;
+    font-size: 13px; opacity:0; transform: translateY(6px); transition: all .25s ease; pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:none; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+  @media (max-width: 640px){ .edit-toolbar{ left:16px; right:16px; justify-content:center; flex-wrap:wrap; } }
+</style>
+</head>
+<body>
+
+<div id="siteRoot">
+
+<header class="hero">
+  <svg class="hero-motif" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="90" cy="90" r="62" stroke="#A6552D" stroke-width="1.4" opacity="0.55"/>
+    <circle cx="130" cy="120" r="62" stroke="#2B3A55" stroke-width="1.4" opacity="0.55"/>
+    <circle cx="105" cy="165" r="62" stroke="#3F5C3A" stroke-width="1.4" opacity="0.55"/>
+  </svg>
+  <div class="wrap">
+    <div class="kicker">
+      <span data-editable contenteditable="false">UNAD · Escuela de Ciencias de la Educación</span>
+      <span data-editable contenteditable="false">Curso: Infancias, Historias y Perspectivas</span>
+    </div>
+    <h1 class="title" data-editable contenteditable="false">Construcción histórica de las infancias</h1>
+    <div class="presentation" data-editable contenteditable="false">
+      <p>Esta página reúne el trabajo colaborativo de nuestro grupo a lo largo del curso <em>Infancias: Historias y Perspectivas</em>. Aquí documentamos el proceso de análisis y reflexión sobre las transformaciones históricas, sociales y culturales que han moldeado la manera en que la sociedad ha comprendido a los niños, las niñas y las infancias.</p>
+      <p>El sitio se construye de forma progresiva: en cada reto del curso incorporamos nuevas evidencias y reflexiones, partiendo de la construcción histórica de las infancias hasta llegar a las voces actuales que reclaman su reconocimiento como sujetos de derechos.</p>
+    </div>
+    <div class="flourish">
+      <svg width="26" height="14" viewBox="0 0 26 14" fill="none"><path d="M1 7C6 1 10 1 13 7C16 13 20 13 25 7" stroke="#C7A45F" stroke-width="1.2"/></svg>
+    </div>
+  </div>
+</header>
+
+<section class="team">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 data-editable contenteditable="false">Integrantes del grupo</h2>
+      <div class="edit-hint">Modo edición activo — abre la tarjeta de cada integrante (foto + rol) para escribir su nombre, rol y descripción.</div>
+    </div>
+    <div class="team-grid">
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo style="background-image: url('data:image/jpeg;base64,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');"></div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-1">
+          <span class="role-label">Dinamizadora y Evaluadora</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo style="background-image: url('data:image/jpeg;base64,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');"></div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-2">
+          <span class="role-label">Relator</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo style="background-image: url('data:image/jpeg;base64,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');"></div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-3">
+          <span class="role-label">Veedor de la autenticidad</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Member detail modals -->
+<div class="member-modal-overlay" id="modal-1">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Esilda Rosa Rincón Montero</div>
+    <div class="modal-role" data-editable contenteditable="false">Dinamizadora del proceso · Evaluadora</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false"><p style="margin:0 0 12px;">Soy Esilda Rosa Rincon Montero, estudiante de Licenciatura en Educación Infantil. Me considero una persona comprometida y dedicada, y con interés por aprender y participar en el trabajo colaborativo. Mi formación académica me permite fortalecer mis conocimientos sobre las infancias y la importancia de ofrecer a los niños y las niñas espacios de aprendizaje, respeto y participación.</p><p style="margin:0;">En este reto, desempeño los roles de dinamizadora del proceso y evaluadora, apoyando en la organización de las actividades, la participación de las compañeras y la revisión de los aportes elaborados en el grupo.</p></div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+<div class="member-modal-overlay" id="modal-2">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Linda Michel Amaris Reales</div>
+    <div class="modal-role" data-editable contenteditable="false">Relator</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false"><p style="margin:0 0 12px;">Hola cordial saludo, me presento.</p><p style="margin:0;">Soy una estudiante de Licenciatura en Educación en la UNAD, y creo firmemente que cada niño y niña merecen ser visto, escuchados y acompañados con amor. Elegí este camino porque la sonrisa de un niño aprendiendo algo nuevo es, para mí, una de las cosas más hermosa de la vida. Soy una persona alegre, atenta, amorosa y comprometida con mi profesión, también convencida de que la educación se construye desde el corazón tanto como desde el conocimiento. En este curso asumí el rol de Relator, un espacio donde también aprendí a escuchar y valorar las voces de mis compañeras de equipo.</p></div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+<div class="member-modal-overlay" id="modal-3">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Kelly Johana Mier Vega</div>
+    <div class="modal-role" data-editable contenteditable="false">Veedor de la autenticidad</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false"><p style="margin:0 0 12px;">Cordial saludo, soy Kelly Johana Mier Vega, estudiante de Licenciatura en Educación Infantil y vivo en Tamalameque, Cesar. Elegí esta carrera porque considero que la infancia es una etapa fundamental y que los niños y las niñas necesitan crecer en ambientes donde sean escuchados, respetados, protegidos y valorados. Me considero una persona responsable, comprometida, amable y con muchas ganas de aprender; en mi tiempo libre disfruto compartir con mi familia, leer, jugar fútbol y visitar lugares como la playa.</p><p style="margin:0;">A través de este trabajo comprendí que el concepto de infancia ha cambiado según las culturas, las épocas y los contextos, lo que me permite reconocer a los niños y las niñas como sujetos de derechos y participantes activos de la sociedad. Como futura docente, espero aportar acompañando, escuchando y orientando, y creando espacios donde cada niño desarrolle sus capacidades de manera integral. Esta página busca compartir lo aprendido y promover una educación más respetuosa, inclusiva y significativa. Gracias por visitarla y acompañarme en este recorrido; espero que invite a reflexionar sobre la importancia de seguir promoviendo el respeto, el cuidado y los derechos de los niños y las niñas.</p></div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+
+<nav class="tabs">
+  <div class="wrap tabs-inner">
+    <button class="tab-btn active" data-tab="reto2"><span class="num">I</span><span class="label" data-editable contenteditable="false">Construcción histórica de las infancias</span></button>
+    <button class="tab-btn" data-tab="reto3"><span class="num">II</span><span class="label" data-editable contenteditable="false">Infancias en perspectiva</span></button>
+    <button class="tab-btn" data-tab="reto4"><span class="num">III</span><span class="label" data-editable contenteditable="false">Comprendiendo las realidades y desafíos</span></button>
+    <button class="tab-btn" data-tab="reto5"><span class="num">IV</span><span class="label" data-editable contenteditable="false">Voces para la transformación</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="panel active" id="panel-reto2">
+    <h2 class="panel-title" data-editable contenteditable="false">Construcción histórica de las infancias</h2>
+    <p class="panel-sub" data-editable contenteditable="false">Línea de tiempo interactiva · Edad Antigua, Edad Media y Edad Moderna</p>
+
+    <p class="intro" data-editable contenteditable="false">La infancia no ha sido comprendida siempre de la misma manera: es una construcción social que ha cambiado según las condiciones económicas, religiosas y filosóficas de cada época. Exploren cada periodo para conocer cómo se concebía a los niños y las niñas, qué autores marcaron el pensamiento de la época y qué transformaciones sentaron las bases del reconocimiento actual de la infancia como sujeto de derechos.</p>
+
+    <div class="timeline-nav">
+      <button class="era-btn active" data-era="antigua">
+        <div class="era-period" data-editable contenteditable="false">Siglo VIII a.C. — 476 d.C.</div>
+        <div class="era-name" data-editable contenteditable="false">Edad Antigua</div>
+        <div class="era-bar"></div>
+      </button>
+      <button class="era-btn" data-era="media">
+        <div class="era-period" data-editable contenteditable="false">476 — 1453 d.C.</div>
+        <div class="era-name" data-editable contenteditable="false">Edad Media</div>
+        <div class="era-bar"></div>
+      </button>
+      <button class="era-btn" data-era="moderna">
+        <div class="era-period" data-editable contenteditable="false">Siglos XV — XVIII</div>
+        <div class="era-name" data-editable contenteditable="false">Edad Moderna</div>
+        <div class="era-bar"></div>
+      </button>
+    </div>
+
+    <div class="era-panel active" data-era="antigua">
+      <div class="era-head"><span class="era-dot"></span><div><h3 data-editable contenteditable="false">Edad Antigua</h3><div class="era-range" data-editable contenteditable="false">Grecia y Roma, aproximadamente siglo VIII a.C. – 476 d.C.</div></div></div>
+      <div class="era-grid">
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto social</h4><p>La familia se organizaba bajo la <em>patria potestas</em>: el padre tenía autoridad absoluta sobre los hijos, incluida la decisión sobre su vida. La mortalidad infantil era muy alta y, en culturas como Esparta, se practicaba la selección de los recién nacidos según su aptitud física.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto cultural</h4><p>No existía una noción diferenciada de infancia como etapa con necesidades propias. El niño era visto como un "adulto en miniatura" o como un ser incompleto en camino hacia la razón y la ciudadanía.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Concepciones de niño, niña y niñez</h4><p>El valor del niño dependía de su futura utilidad para la familia y el Estado. Existían marcadas diferencias según el sexo: los niños se preparaban para la vida pública, militar o cívica, mientras las niñas se formaban para el rol doméstico.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Autores y aportes</h4><ul>
+          <li><strong>Platón</strong> — propuso en <em>La República</em> una educación organizada y dirigida por el Estado.</li>
+          <li><strong>Aristóteles</strong> — reflexionó sobre las etapas del desarrollo humano y el papel de la razón en la formación del carácter.</li>
+          <li><strong>Quintiliano</strong> — desarrolló en Roma principios pedagógicos centrados en la formación retórica y moral del futuro ciudadano.</li>
+        </ul></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Transformaciones e hitos relevantes</h4><p>Surgimiento de instituciones educativas como el gimnasio griego; consolidación de la patria potestad como institución jurídica romana.</p></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Reflexión crítica</h4><p>En esta época no existía un reconocimiento de derechos propios de la niñez; el niño carecía de voz y su lugar en la sociedad se definía exclusivamente por su utilidad futura para la familia y el Estado.</p></div>
+      </div>
+    </div>
+
+    <div class="era-panel" data-era="media">
+      <div class="era-head"><span class="era-dot"></span><div><h3 data-editable contenteditable="false">Edad Media</h3><div class="era-range" data-editable contenteditable="false">476 – 1453 d.C.</div></div></div>
+      <div class="era-grid">
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto social</h4><p>Persistía una alta mortalidad infantil y economías rurales que incorporaban a los niños tempranamente al trabajo agrícola, artesanal o doméstico. Los compromisos matrimoniales podían pactarse desde edades muy tempranas.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto cultural</h4><p>Fuerte influencia de la Iglesia católica. Según el historiador Philippe Ariès, no existía un "sentimiento de infancia" diferenciado: en cuanto el niño podía valerse por sí mismo, alrededor de los 7 años, se integraba al mundo adulto, vistiendo y trabajando junto a los adultos.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Concepciones de niño, niña y niñez</h4><p>La niñez se entendía como una etapa de fragilidad marcada por la idea religiosa del pecado original, que debía corregirse mediante la disciplina y la instrucción moral.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Autores y aportes</h4><ul>
+          <li><strong>Philippe Ariès</strong> — su obra sobre la vida familiar en el Antiguo Régimen es la referencia clave para comprender la ausencia de un concepto diferenciado de infancia en este periodo.</li>
+          <li><strong>Santo Tomás de Aquino</strong> — aportó una visión escolástica centrada en la formación moral y espiritual del niño.</li>
+        </ul></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Transformaciones e hitos relevantes</h4><p>Aparición de los gremios y el aprendizaje de oficios desde edades tempranas; expansión de la catequesis como forma de instrucción infantil.</p></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Reflexión crítica</h4><p>El niño no tenía estatus jurídico ni social propio; su reconocimiento e integración dependían de su capacidad de incorporarse cuanto antes al mundo y a las labores de los adultos.</p></div>
+      </div>
+    </div>
+
+    <div class="era-panel" data-era="moderna">
+      <div class="era-head"><span class="era-dot"></span><div><h3 data-editable contenteditable="false">Edad Moderna</h3><div class="era-range" data-editable contenteditable="false">Siglos XV – XVIII</div></div></div>
+      <div class="era-grid">
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto social</h4><p>Se consolida la familia nuclear burguesa y aumenta el cuidado y la atención parental hacia los hijos. Surgen instituciones escolares organizadas por edades y niveles.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto cultural</h4><p>Con la Ilustración y el racionalismo comienza a reconocerse la infancia como una etapa particular del desarrollo humano, con necesidades educativas y afectivas propias, distintas a las del adulto.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Concepciones de niño, niña y niñez</h4><p>Emerge la idea del niño como un ser en formación, con una naturaleza propia que merece protección, cuidado y una educación específica y progresiva.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Autores y aportes</h4><ul>
+          <li><strong>John Locke</strong> — propuso la idea de la mente infantil como una "tabla rasa", moldeable a través de la experiencia y la educación.</li>
+          <li><strong>Jean-Jacques Rousseau</strong> — en <em>Emilio, o de la educación</em> (1762) defendió que la infancia tiene un valor en sí misma y que la educación debe respetar el desarrollo natural del niño.</li>
+          <li><strong>Johann Heinrich Pestalozzi</strong> — impulsó una pedagogía centrada en el niño y en el aprendizaje a través de la experiencia sensible.</li>
+        </ul></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Transformaciones e hitos relevantes</h4><p>Expansión de la escolarización; publicación de los primeros tratados pedagógicos modernos; cambios en la vestimenta, los juguetes y los espacios destinados a los niños, que comienzan a diferenciarse del mundo adulto.</p></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Reflexión crítica</h4><p>Esta época sienta las bases filosóficas que, siglos después, permitirían el reconocimiento jurídico de los niños y las niñas como sujetos de derechos, camino que culminaría en instrumentos como la Convención sobre los Derechos del Niño (1989).</p></div>
+      </div>
+    </div>
+
+    <div class="closing">
+      <h3 data-editable contenteditable="false">Reflexión general</h3>
+      <p data-editable contenteditable="false">Al recorrer estas tres etapas se evidencia que la infancia no es una categoría natural o fija, sino una construcción social y cultural. Pasar de ver al niño como propiedad del padre, a un ser integrado tempranamente al mundo adulto sin diferenciación, y finalmente a un sujeto con una naturaleza y necesidades propias, permite comprender cómo se fue gestando el camino hacia el reconocimiento actual de los niños y las niñas como sujetos de derechos, un proceso que sigue en construcción en distintos contextos sociales y educativos.</p>
+    </div>
+
+    <div class="references">
+      <h3 data-editable contenteditable="false">Referencias bibliográficas</h3>
+      <ol data-editable contenteditable="false">
+        <li>Ariès, P. (1987). <em>El niño y la vida familiar en el Antiguo Régimen</em>. Taurus.</li>
+        <li>Benchimol, K., Bidese, M., Gentile, M., Keserman, A., Juárez, M., Sokolowicz, A., Zapiola, M., Amado, G., &amp; Espínola, C. (2023). <em>Infancias en plural</em>. Universidad Nacional General de Sarmiento. https://biblioteca-repositorio.clacso.edu.ar/bitstream/CLACSO/249094/1/Infancias-en-plural.pdf</li>
+        <li>Chica, F., &amp; Rasero, L. (2012). Construcción social de la infancia y el reconocimiento de sus competencias. <em>Itinerario Educativo: Revista de la Facultad de Educación</em>, 26(60), 75–96. https://dialnet.unirioja.es/servlet/articulo?codigo=6280191</li>
+        <li>Locke, J. (1990). <em>Pensamientos sobre la educación</em>. Akal. (Obra original publicada en 1693).</li>
+        <li>Pedraza Ramírez, C. E., Morales Mantilla, S. M., Gómez Bohórquez, P. T., Rodríguez Bernal, Y., Pérez Ospina, J. M., &amp; Villamizar Parada, N. J. (2022). <em>Representaciones sobre la educación infantil: Infancias en contingencia</em>. Sello Editorial UNAD. https://doi.org/10.22490/9789586518710</li>
+        <li>Rousseau, J. J. (1990). <em>Emilio, o de la educación</em>. Alianza Editorial. (Obra original publicada en 1762).</li>
+      </ol>
+      <div class="edit-hint" style="margin-top:14px;">Modo edición activo — escribe directamente sobre cualquier texto de la página; en la lista de referencias, presiona Enter para añadir una nueva.</div>
+    </div>
+  </section>
+
+<section class="panel" id="panel-reto3">
+    <h2 class="panel-title" data-editable contenteditable="false">Infancias en perspectiva</h2>
+    <p class="panel-sub" data-editable contenteditable="false">Matriz de análisis · Autores, aportes y comprensión de las infancias</p>
+
+    <p class="intro" data-editable contenteditable="false">Cada integrante seleccionó autores que estudian la infancia y analizó sus principales aportes, su contribución al concepto de niño y niña y a la construcción del concepto de infancia, su incidencia en los contextos educativos y sociales, y la manera en que cada uno entiende las infancias.</p>
+
+    <h3 class="r3-heading" data-editable contenteditable="false">Matriz de análisis</h3>
+    <h3 class="r3-student" data-editable contenteditable="false">Linda Michel Amaris Reales</h3>
+<div class="r3-grid">
+<article class="r3-card">
+<h4 class="r3-author">Gómez-Mendoza y Alzate-Piedrahíta (2014)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Se examinan las transformaciones de la niñez en la actualidad: alteraciones en la familia, la educación, los medios de comunicación y la tecnología, y cómo estas influyen en la vivencia de ser infante en la actualidad.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>Se presentan a los niños como individuos activos que se involucran en su medio social y cultural, no simplemente como quienes reciben atención de los adultos.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>Indican que la niñez actual difiere de la de épocas pasadas y que su relevancia se transforma con las variaciones sociales.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Sostienen que la educación, la familia y las políticas deben reevaluar sus enfoques en relación con infancias en evolución.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Considerándola como una realidad dinámica, influenciada por factores sociales, culturales y tecnológicos.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">Enesco (2010)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Explora la evolución del concepto de infancia a través de la historia (Antigüedad, Edad Media, Modernidad), evidenciando que no es algo universal ni natural.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>Muestra la transición de considerar al niño como una propiedad o un «adulto pequeño» a reconocerlo como un individuo con necesidades y derechos propios.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>Ilustra que la infancia es una construcción cultural e histórica, lo que fundamenta el análisis de las infancias en plural.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Facilita la comprensión del origen de diversas prácticas de educación y crianza, así como la revisión de modelos centrados en el adulto.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como un concepto dinámico que se modifica con cada época y contexto social.</dd>
+</dl>
+</article>
+</div>
+<h3 class="r3-student" data-editable contenteditable="false">Kelly Johana Mier Vega</h3>
+<div class="r3-grid">
+<article class="r3-card">
+<h4 class="r3-author">Chica y Rosero Prado (2012)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Analiza la infancia como una construcción social e histórica, influida por la cultura y las relaciones sociales.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>El niño es un sujeto con capacidades, necesidades y derechos que deben ser reconocidos.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>La infancia se construye mediante experiencias familiares, culturales, sociales y educativas.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Promueve el respeto por los derechos de los niños y una educación que valore sus diferencias.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como experiencias diversas que dependen de la cultura, la familia y el entorno social.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">Gaitán (2010)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Resalta la importancia de estudiar a los niños como actores sociales y reconocer su participación.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>El niño es un sujeto activo que puede expresar opiniones y participar en la sociedad.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>La infancia es una realidad social que cambia según la época y el contexto.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Invita a escuchar a los niños, respetar sus opiniones y garantizar sus derechos.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como realidades diversas que dependen de las condiciones sociales y de las experiencias de cada niño.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">Pollock (1983)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Examina documentos históricos para comprender la crianza y las relaciones familiares en la infancia.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>El niño es una persona que necesita cuidado, protección y afecto durante su desarrollo.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>La infancia debe comprenderse a partir de las experiencias de los niños y de las relaciones con sus padres.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Destaca la importancia de las relaciones familiares y de las prácticas de crianza en el desarrollo infantil.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como experiencias que pueden variar según la familia, la crianza y las condiciones de cada época.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">deMause (1974)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Estudia la evolución histórica de las relaciones entre padres e hijos y la forma de crianza.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>El niño es una persona cuyo desarrollo está relacionado con el trato y el cuidado que recibe de los adultos.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>El concepto de infancia ha cambiado a lo largo de la historia, junto con las prácticas de crianza.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Permite reflexionar sobre la protección infantil, el cuidado y la importancia de prevenir el maltrato.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como experiencias históricas que reflejan los cambios en la crianza y en las relaciones entre adultos y niños.</dd>
+</dl>
+</article>
+</div>
+<h3 class="r3-student" data-editable contenteditable="false">Esilda Rosa Rincón Montero</h3>
+<div class="r3-grid">
+<article class="r3-card">
+<h4 class="r3-author">Amador Baquiro (2012)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Explica que las infancias se han transformado a lo largo del tiempo y que no todos los niños comparten las mismas vivencias.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>Los reconoce como sujetos con experiencias propias, cuyas situaciones deben tenerse en cuenta.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>Las infancias cambian según las condiciones sociales, culturales y políticas de sus entornos.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Sus experiencias deben considerarse en la familia, la escuela y la sociedad.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como infancias diversas y cambiantes, ligadas a condiciones sociales, culturales y políticas.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">Rodríguez Bernal (2022)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Muestra que las formas de pensar de las familias, los adultos y la sociedad influyen en la manera de ver y tratar a los niños y las niñas.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>Resalta la importancia de escuchar sus voces, comprender sus vivencias y valorar sus puntos de vista.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>Cada infancia es diferente; los entornos sociales y culturales influyen en su crecimiento y desarrollo.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Invita a escuchar y valorar a los niños en los contextos familiares y sociales.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como infancias distintas, moldeadas por las representaciones y los entornos sociales y culturales.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">Diker (2008)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Invita a reflexionar sobre las transformaciones en la manera de comprender las infancias en la sociedad contemporánea.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>Las experiencias infantiles no son iguales para todos: dependen de los contextos sociales y culturales.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>Las infancias se entienden de manera distinta según el contexto social y cultural, y cambian con el tiempo.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Hay que analizar la función que cumplen la familia, la escuela y la sociedad en la vida de los niños.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como experiencias diversas, atravesadas por contextos sociales y culturales.</dd>
+</dl>
+</article>
+<article class="r3-card">
+<h4 class="r3-author">Carli (comp.) (2006)</h4>
+<dl>
+<dt>Principales aportes</dt><dd>Examina la infancia desde una perspectiva histórica y social, teniendo en cuenta las circunstancias en las que crecen los niños.</dd>
+<dt>Aporte al concepto de niño/niña</dt><dd>Los ubica en circunstancias sociales, educativas y de autoridad que condicionan sus experiencias.</dd>
+<dt>Aporte a la construcción del concepto de infancia</dt><dd>La infancia es histórica y social; se vive de maneras diferentes según las posibilidades y las circunstancias de cada contexto.</dd>
+<dt>Incidencia en los contextos educativos y sociales</dt><dd>Aborda la educación, los vínculos de autoridad y las situaciones sociales que influyen en las experiencias infantiles.</dd>
+<dt>¿Cómo entiende el autor las infancias?</dt><dd>Como infancias plurales, que dependen de las posibilidades y circunstancias de cada contexto.</dd>
+</dl>
+</article>
+</div>
+
+    <h3 class="r3-heading" data-editable contenteditable="false">Conclusiones</h3>
+    <div class="r3-concl"><h4>Comprensión de las infancias contemporáneas</h4><p>Los investigadores coinciden en que la niñez no es una fase natural o universal, sino una construcción social, cultural e histórica (Chica y Rosero Prado, 2012; Enesco, 2010; Gaitán, 2010). En contraste con la percepción del niño como propiedad o &quot;adulto en miniatura&quot;, hoy se reconoce a los niños y a las niñas como poseedores de necesidades y derechos específicos (Enesco, 2010). Además, Gómez-Mendoza y Alzate-Piedrahíta (2014) destacan que la familia, la educación, los medios de comunicación y la tecnología modifican la experiencia de la niñez, mientras que Amador Baquiro (2012) y Diker (2008) sostienen que es pertinente hablar de infancias en plural.</p></div>
+<div class="r3-concl"><h4>Niños y niñas como sujetos de derechos</h4><p>Chica y Rosero Prado (2012), Gaitán (2010) y Gómez-Mendoza y Alzate-Piedrahíta (2014) presentan a los niños y niñas como individuos activos, capaces de aprender, expresar sus opiniones y participar, y no solo como sujetos pasivos de atención. Rodríguez Bernal (2022) resalta la necesidad de escuchar sus voces y considerar sus perspectivas. Este enfoque requiere que la familia, la escuela y las instituciones aseguren sus derechos y les ofrezcan verdaderos espacios de participación.</p></div>
+<div class="r3-concl"><h4>Diversidad, inclusión y equidad</h4><p>Gaitán (2010) indica que la experiencia de ser niño o niña varía según las condiciones de vida, el acceso a la educación y las desigualdades sociales, y Amador Baquiro (2012), Rodríguez Bernal (2022), Diker (2008) y Carli (2006) están de acuerdo en que no todas las infancias son vividas de la misma manera. Reconocer esta diversidad permite la construcción de prácticas educativas que sean inclusivas y equitativas, basadas en la realidad de cada niño y niña, considerando también brechas como las económicas y tecnológicas mencionadas por Gómez-Mendoza y Alzate-Piedrahíta (2014).</p></div>
+<div class="r3-concl"><h4>Contextos educativos y sociales</h4><p>Los aportes de los autores muestran que las infancias dependen de lo que sucede en el contexto familiar, escolar y social. Enesco (2010) sugiere revisar modelos que se enfoquen exclusivamente en el adulto; Carli (2006) y Diker (2008) analizan la función de la educación y de las relaciones de autoridad; y Pollock (1983) y deMause (1974) evidencian que las prácticas de crianza tienen un trasfondo histórico y que el cuidado y la protección contra el maltrato son esenciales para el bienestar de los niños. Por ello, la educación, la familia y las políticas deben reconsiderar sus enfoques (Gómez-Mendoza y Alzate-Piedrahíta, 2014).</p></div>
+<div class="r3-concl"><h4>Aprendizajes del grupo</h4><p>Esta experiencia permitió al grupo entender que las infancias son variadas y evolucionan con el tiempo, reconociendo que abordar a los niños y niñas como titulares de derechos implica escucharlos y asegurar su participación. Para las futuras profesionales en Educación Infantil, estos aprendizajes sirven como fundamento para diseñar prácticas pedagógicas inclusivas, que respeten las diferencias, valoren las voces de la infancia y se adapten a los contextos en los que crecen los niños y las niñas.</p></div>
+
+    <div class="references">
+      <h3 data-editable contenteditable="false">Referencias bibliográficas</h3>
+      <ol data-editable contenteditable="false">
+<li>Amador Baquiro, J. C. (2012). Condición infantil contemporánea: Hacia una epistemología de las infancias. <em>Pedagogía y Saberes</em>, (37), 73–87. https://www.redalyc.org/pdf/6140/614064827007.pdf</li>
+<li>Carli, S. (Comp.). (2006). <em>La cuestión de la infancia: Entre la escuela, la calle y el shopping</em>. Paidós.</li>
+<li>Chica, M. F., &amp; Rosero Prado, A. L. (2012). La construcción social de la infancia y el reconocimiento de sus competencias. <em>Itinerario Educativo</em>, (60), 75–96.</li>
+<li>deMause, L. (Ed.). (1974). <em>The history of childhood</em>. Psychohistory Press.</li>
+<li>Diker, G. (2008). <em>¿Qué hay de nuevo en las nuevas infancias?</em> Universidad Nacional de General Sarmiento.</li>
+<li>Enesco, I. (2010). <em>El concepto de infancia a lo largo de la historia</em>. Repositorio Institucional UNAD. https://repository.unad.edu.co/handle/10596/4865</li>
+<li>Gómez-Mendoza, M. A., &amp; Alzate-Piedrahíta, M. V. (2014). La infancia contemporánea. <em>Revista Latinoamericana de Ciencias Sociales, Niñez y Juventud</em>, 12(1), 77–89. https://dialnet.unirioja.es/servlet/articulo?codigo=4657529</li>
+<li>Pollock, L. A. (1983). <em>Forgotten children: Parent–child relations from 1500 to 1900</em>. Cambridge University Press.</li>
+<li>Rodríguez Bernal, Y. (2022). <em>Representaciones sociales: Infancias y contextos</em>. Sello Editorial UNAD. https://doi.org/10.22490/9789586518710</li>
+      </ol>
+    </div>
+  </section>
+  <section class="panel" id="panel-reto4"><div class="placeholder-panel" data-editable contenteditable="false"><h3>Comprendiendo las realidades y desafíos de las infancias</h3><p>Esta pestaña se desarrollará en el Reto 4 del curso.</p></div></section>
+  <section class="panel" id="panel-reto5"><div class="placeholder-panel" data-editable contenteditable="false"><h3>Voces para la transformación de las infancias</h3><p>Esta pestaña se desarrollará en el Reto 5 del curso.</p></div></section>
+
+</main>
+
+<footer>
+  <div class="wrap" data-editable contenteditable="false">Universidad Nacional Abierta y a Distancia (UNAD) · Curso Infancias: Historias y Perspectivas · Código 514517</div>
+</footer>
+
+</div><!-- /siteRoot -->
+
+<div class="edit-toolbar">
+  <button class="btn-ghost" id="btnDownload" type="button">⬇ Descargar página final</button>
+  <button class="btn-ghost" id="btnExit" type="button">Salir sin guardar</button>
+  <button class="btn-primary" id="btnEdit" type="button">✎ Editar página</button>
+</div>
+<div class="toast" id="toast">Cambios guardados</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'infanciasReto2_siteHTML_v2';
+  const siteRoot = document.getElementById('siteRoot');
+  const body = document.body;
+  const btnEdit = document.getElementById('btnEdit');
+  const btnDownload = document.getElementById('btnDownload');
+  const btnExit = document.getElementById('btnExit');
+  const toast = document.getElementById('toast');
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 2200);
+  }
+
+  function isEditing(){ return body.classList.contains('edit-mode'); }
+
+  function closeAllModals(){
+    siteRoot.querySelectorAll('.member-modal-overlay.open').forEach(o => o.classList.remove('open'));
+  }
+
+  function updateScrollBtns(overlay){
+    const bio = overlay.querySelector('.modal-bio');
+    const up = overlay.querySelector('.scroll-up');
+    const down = overlay.querySelector('.scroll-down');
+    if(!bio || !up || !down) return;
+    up.disabled = bio.scrollTop <= 0;
+    down.disabled = bio.scrollTop + bio.clientHeight >= bio.scrollHeight - 1;
+  }
+
+  function bindScrollHold(btn, bio, direction){
+    let intervalId = null;
+    const step = () => { bio.scrollBy({ top: direction * 46, behavior: 'smooth' }); };
+    const start = (e) => {
+      e.preventDefault();
+      step();
+      intervalId = setInterval(step, 220);
+    };
+    const stop = () => { if(intervalId){ clearInterval(intervalId); intervalId = null; } };
+    btn.addEventListener('mousedown', start);
+    btn.addEventListener('touchstart', start, { passive:false });
+    ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => btn.addEventListener(evt, stop));
+  }
+
+  function bindInteractivity(){
+    // Tabs
+    const tabBtns = siteRoot.querySelectorAll('.tab-btn');
+    const panels = siteRoot.querySelectorAll('.panel');
+    tabBtns.forEach(btn => {
+      btn.onclick = () => {
+        if(isEditing()) return;
+        tabBtns.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        siteRoot.querySelector('#panel-' + btn.dataset.tab).classList.add('active');
+      };
+    });
+
+    // Timeline eras
+    const eraBtns = siteRoot.querySelectorAll('.era-btn');
+    const eraPanels = siteRoot.querySelectorAll('.era-panel');
+    eraBtns.forEach(btn => {
+      btn.onclick = () => {
+        if(isEditing()) return;
+        eraBtns.forEach(b => b.classList.remove('active'));
+        eraPanels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        siteRoot.querySelector('.era-panel[data-era="' + btn.dataset.era + '"]').classList.add('active');
+      };
+    });
+
+    // Photo upload
+    siteRoot.querySelectorAll('.avatar-wrap').forEach(wrap => {
+      const btn = wrap.querySelector('.photo-btn');
+      const input = wrap.querySelector('.photo-input');
+      const avatar = wrap.querySelector('.avatar');
+      btn.onclick = () => { if(isEditing()) input.click(); };
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const size = 240;
+            canvas.width = size; canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const scale = Math.max(size/img.width, size/img.height);
+            const w = img.width*scale, h = img.height*scale;
+            ctx.drawImage(img, (size-w)/2, (size-h)/2, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            avatar.style.backgroundImage = 'url(' + dataUrl + ')';
+            avatar.textContent = '';
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+    });
+
+    // Member modals: open
+    siteRoot.querySelectorAll('.role-pill').forEach(pill => {
+      pill.onclick = () => {
+        const overlay = siteRoot.querySelector('#' + pill.dataset.modalTarget);
+        if(!overlay) return;
+        const avatar = pill.closest('.member').querySelector('.avatar');
+        const modalAvatar = overlay.querySelector('.modal-avatar');
+        modalAvatar.style.backgroundImage = avatar.style.backgroundImage || 'none';
+        closeAllModals();
+        overlay.classList.add('open');
+        const bio = overlay.querySelector('.modal-bio');
+        if(bio) bio.scrollTop = 0;
+        updateScrollBtns(overlay);
+      };
+    });
+
+    // Member modals: close + sync pill label with edited role text + scroll controls
+    siteRoot.querySelectorAll('.member-modal-overlay').forEach(overlay => {
+      const roleField = overlay.querySelector('.modal-role');
+      const pill = siteRoot.querySelector('.role-pill[data-modal-target="' + overlay.id + '"]');
+      const label = pill ? pill.querySelector('.role-label') : null;
+      const bio = overlay.querySelector('.modal-bio');
+      const upBtn = overlay.querySelector('.scroll-up');
+      const downBtn = overlay.querySelector('.scroll-down');
+
+      const close = () => overlay.classList.remove('open');
+      overlay.querySelector('.modal-close').onclick = close;
+      overlay.addEventListener('click', (e) => { if(e.target === overlay) close(); });
+
+      if(roleField && label){
+        roleField.addEventListener('input', () => {
+          label.textContent = roleField.textContent.trim() || label.textContent;
+        });
+      }
+
+      if(bio){
+        bio.addEventListener('scroll', () => updateScrollBtns(overlay));
+        bio.addEventListener('input', () => updateScrollBtns(overlay));
+      }
+      if(upBtn && bio) bindScrollHold(upBtn, bio, -1);
+      if(downBtn && bio) bindScrollHold(downBtn, bio, 1);
+    });
+
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeAllModals(); });
+  }
+
+  function setEditable(state){
+    siteRoot.querySelectorAll('[data-editable]').forEach(el => el.setAttribute('contenteditable', state));
+  }
+
+  function restoreFromStorage(){
+    try{
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if(saved){ siteRoot.innerHTML = saved; }
+    }catch(e){ console.warn('No se pudo restaurar el borrador guardado', e); }
+    bindInteractivity();
+  }
+
+  function saveDraft(){
+    try{
+      localStorage.setItem(STORAGE_KEY, siteRoot.innerHTML);
+      showToast('Borrador guardado en este navegador');
+    }catch(e){
+      showToast('No se pudo guardar (almacenamiento lleno)');
+    }
+  }
+
+  function downloadFinal(){
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
+    clone.querySelector('body').classList.remove('edit-mode');
+    clone.querySelectorAll('.member-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'construccion-historica-infancias.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Página final descargada');
+  }
+
+  btnEdit.addEventListener('click', () => {
+    const entering = !isEditing();
+    if(entering){
+      body.classList.add('edit-mode');
+      setEditable(true);
+      btnEdit.textContent = '💾 Guardar borrador';
+    } else {
+      setEditable(false);
+      saveDraft();
+      body.classList.remove('edit-mode');
+      btnEdit.textContent = '✎ Editar página';
+    }
+  });
+
+  btnDownload.addEventListener('click', downloadFinal);
+
+  btnExit.addEventListener('click', () => {
+    setEditable(false);
+    body.classList.remove('edit-mode');
+    btnEdit.textContent = '✎ Editar página';
+  });
+
+  document.addEventListener('DOMContentLoaded', restoreFromStorage);
+  if(document.readyState !== 'loading') restoreFromStorage();
+})();
+</script>
+
+</body>
+</html>
